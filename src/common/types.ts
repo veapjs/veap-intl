@@ -1,3 +1,5 @@
+import type { VeapConfig as _VeapConfig } from "@veap/kernel";
+
 /**
  * Common date type that can be coerced to a Date object.
  */
@@ -28,6 +30,12 @@ export interface IntlConfig {
   locales: string[];
   cookie: string;
   timeZone?: string;
+}
+
+declare module "@veap/kernel" {
+  interface VeapConfig {
+    intl?: Partial<IntlConfig>;
+  }
 }
 
 /**

@@ -1,8 +1,8 @@
 import { cookies } from "next/headers";
-import { getIntlConfig } from "../common/config";
-import { detectLocale } from "../common/detection";
-import { getMessages } from "../services/loader";
-import { createTranslator } from "../services/translator";
+import { getIntlConfig } from "../common/config.js";
+import { detectLocale } from "../common/detection.js";
+import { getMessages } from "../services/loader.js";
+import { createTranslator } from "../services/translator.js";
 
 export async function getTranslation(
   localeOverride?: string,

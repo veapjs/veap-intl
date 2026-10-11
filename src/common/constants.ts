@@ -1,3 +1,6 @@
+import type { Token } from "@veap/kernel";
+import type { IntlService } from "../services/intl.service.js";
+
 /**
  * Default configuration for the intl package.
  * These values are used if no configuration is provided in veap.config.ts.
@@ -14,6 +17,7 @@ export const DEFAULT_LOCALE = DEFAULT_INTL_CONFIG.default;
 export const LOCALES = DEFAULT_INTL_CONFIG.locales;
 
 export const INTL_MESSAGE_LOADERS = Symbol.for("veap:intl:message_loaders");
+export const INTL_SERVICE: Token<IntlService> = Symbol.for("veap:intl:service");
 
 export const IN_MS = {
   SECOND: 1_000,

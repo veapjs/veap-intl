@@ -1,10 +1,10 @@
 import { IntlMessageFormat } from "intl-messageformat";
-import { IN_MS } from "../common/constants";
+import { IN_MS } from "../common/constants.js";
 import type {
   AbstractIntlMessages,
   CoercibleDate,
   TranslationKeys,
-} from "../common/types";
+} from "../common/types.js";
 
 export function getNestedMessage(
   messages: AbstractIntlMessages | undefined,
@@ -84,17 +84,24 @@ export const createTranslator = ({
 };
 
 export function coerceDate(date: CoercibleDate): Date {
+  let parsed: Date;
   if (date instanceof Date) {
-    return date;
+    parsed = date;
+  } else if (typeof date === "string" || typeof date === "number") {
+    parsed = new Date(date);
+  } else {
+    throw new Error(
+      `Invalid date: expected Date, string, or number, but received value "${date}" of type "${typeof date}"`,
+    );
   }
 
-  if (typeof date === "string" || typeof date === "number") {
-    return new Date(date);
+  if (isNaN(parsed.getTime())) {
+    throw new Error(
+      `Invalid date value: "${date}" could not be parsed as a valid time`,
+    );
   }
 
-  throw new Error(
-    `Invalid date: expected Date, string, or number, but received value "${date}" of type "${typeof date}"`,
-  );
+  return parsed;
 }
 
 export function createTextFormatter({

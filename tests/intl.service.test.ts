@@ -1,7 +1,8 @@
 import { Container } from "@veap/kernel";
 import { describe, expect, it } from "vitest";
-import { IntlServiceProvider } from "../src/providers/intl.provider";
-import { IntlService } from "../src/services/intl.service";
+import { INTL_SERVICE } from "../src/common/constants.js";
+import { IntlServiceProvider } from "../src/providers/intl.provider.js";
+import { IntlService } from "../src/services/intl.service.js";
 
 describe("IntlService & Loaders (@veap/intl)", () => {
   it("merges messages using registered loaders according to priority", async () => {
@@ -53,7 +54,7 @@ describe("IntlService & Loaders (@veap/intl)", () => {
     expect((messages as any).app?.hello).toBe("Witaj świecie");
   });
 
-  it("allows registering loaders via IntlServiceProvider options", async () => {
+  it("allows registering loaders via IntlServiceProvider options and binds INTL_SERVICE token", async () => {
     const container = new Container();
     const provider = new IntlServiceProvider(container, {
       loaders: [
@@ -69,9 +70,14 @@ describe("IntlService & Loaders (@veap/intl)", () => {
 
     provider.register();
 
-    const service = await container.resolve(IntlService);
-    const messages = await service.getMessages("en");
+    expect(container.has(IntlService)).toBe(true);
+    expect(container.has(INTL_SERVICE)).toBe(true);
 
+    const service = await container.resolve(IntlService);
+    const serviceFromToken = await container.resolve(INTL_SERVICE);
+    expect(service).toBe(serviceFromToken);
+
+    const messages = await service.getMessages("en");
     expect((messages as any).custom?.key).toBe("value");
   });
 
@@ -88,5 +94,17 @@ describe("IntlService & Loaders (@veap/intl)", () => {
 
     const messages = await service.getMessages("en");
     expect((messages as any).greeting).toBe("From direct register");
+  });
+
+  it("sanitizes locale parameter to prevent directory traversal", async () => {
+    const service = new IntlService();
+
+    // Directory traversal attempt
+    const messages = await service.getMessages("../../etc/passwd");
+    expect(messages).toEqual({});
+
+    // Invalid non-alphanumeric locale characters
+    const emptyMessages = await service.getMessages("..///");
+    expect(emptyMessages).toEqual({});
   });
 });

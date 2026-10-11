@@ -1,7 +1,7 @@
 import { match } from "@formatjs/intl-localematcher";
 import Negotiator from "negotiator";
 import { cookies, headers } from "next/headers";
-import { getIntlConfig } from "./config";
+import { getIntlConfig } from "./config.js";
 
 export async function detectLocale(
   supportedLocales: string[],

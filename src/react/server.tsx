@@ -1,9 +1,9 @@
 import { cookies } from "next/headers";
 import React, { type PropsWithChildren } from "react";
-import { getIntlConfig } from "../common/config";
-import { detectLocale } from "../common/detection";
-import { getMessages } from "../services/loader";
-import { I18nProvider as ClientProvider } from "./client";
+import { getIntlConfig } from "../common/config.js";
+import { detectLocale } from "../common/detection.js";
+import { getMessages } from "../services/loader.js";
+import { I18nProvider as ClientProvider } from "./client.js";
 
 /**
  * Smart Server Component that handles locale detection and message loading automatically.

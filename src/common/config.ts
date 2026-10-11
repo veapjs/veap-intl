@@ -1,5 +1,5 @@
 import { getVeapConfig } from "@veap/kernel/server";
-import { DEFAULT_INTL_CONFIG } from "./constants";
+import { DEFAULT_INTL_CONFIG } from "./constants.js";
 
 /**
  * Loads the intl configuration by merging the defaults with values from veap.config.ts.

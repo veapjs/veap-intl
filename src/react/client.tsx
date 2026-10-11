@@ -2,8 +2,8 @@
 
 import * as React from "react";
 import { createContext, useContext } from "react";
-import type { AbstractIntlMessages } from "../common/types";
-import { createTranslator } from "../services/translator";
+import type { AbstractIntlMessages } from "../common/types.js";
+import { createTranslator } from "../services/translator.js";
 
 type ContextType = {
   locale: string;

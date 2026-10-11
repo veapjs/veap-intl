@@ -1,7 +1,7 @@
 import { type Container, ServiceProvider } from "@veap/kernel";
-import { INTL_MESSAGE_LOADERS } from "../common/constants";
-import type { MessageLoaderFn, MessageLoaderRecord } from "../common/types";
-import { IntlService } from "../services/intl.service";
+import { INTL_MESSAGE_LOADERS, INTL_SERVICE } from "../common/constants.js";
+import type { MessageLoaderFn, MessageLoaderRecord } from "../common/types.js";
+import { IntlService } from "../services/intl.service.js";
 
 export interface IntlProviderOptions {
   loaders?: (MessageLoaderRecord | MessageLoaderFn)[];
@@ -24,6 +24,13 @@ export class IntlServiceProvider extends ServiceProvider {
     this.container.register({
       token: IntlService,
       useClass: IntlService,
+      singleton: true,
+    });
+
+    this.container.register({
+      token: INTL_SERVICE,
+      useFactory: (service: IntlService) => service,
+      inject: [IntlService],
       singleton: true,
     });
   }

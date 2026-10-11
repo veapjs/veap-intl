@@ -2,21 +2,21 @@ import fsSync from "node:fs";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { Inject, Injectable } from "@veap/kernel";
-import { INTL_MESSAGE_LOADERS } from "../common/constants";
+import { INTL_MESSAGE_LOADERS } from "../common/constants.js";
 import type {
   AbstractIntlMessages,
   MessageLoaderFn,
   MessageLoaderRecord,
-} from "../common/types";
-import { deepMerge } from "../common/utils";
+} from "../common/types.js";
+import { deepMerge } from "../common/utils.js";
 
 @Injectable()
 export class IntlService {
   private loaders: MessageLoaderRecord[] = [];
   private registeredMessages: Record<string, AbstractIntlMessages> = {};
   private coreLocales: Record<string, () => Promise<{ default: any }>> = {
-    en: () => import("../locales/en"),
-    pl: () => import("../locales/pl"),
+    en: () => import("../locales/en.js"),
+    pl: () => import("../locales/pl.js"),
   };
 
   constructor(
@@ -64,12 +64,18 @@ export class IntlService {
     locale: string,
     searchDirectories?: string[],
   ): Promise<AbstractIntlMessages> {
+    const safeLocale = path
+      .basename(locale || "")
+      .replace(/[^a-zA-Z0-9_-]/g, "");
+    if (!safeLocale) {
+      return {};
+    }
     let messages: AbstractIntlMessages = {};
 
     // 1. Core Veap locales (Priority 0)
-    if (this.coreLocales[locale]) {
+    if (this.coreLocales[safeLocale]) {
       try {
-        const coreDict = await this.coreLocales[locale]();
+        const coreDict = await this.coreLocales[safeLocale]();
         messages = deepMerge(messages, coreDict.default || coreDict);
       } catch (e) {
         console.error("[veap:Intl] Error loading core locale", e);
@@ -85,14 +91,17 @@ export class IntlService {
     directoriesToScan.add(defaultDir);
 
     for (const dir of Array.from(directoriesToScan)) {
-      const localeFile = path.join(dir, `${locale}.json`);
+      const localeFile = path.join(dir, `${safeLocale}.json`);
       if (fsSync.existsSync(localeFile)) {
         try {
           const fileContent = await fs.readFile(localeFile, "utf-8");
           const jsonContent = JSON.parse(fileContent);
           messages = deepMerge(messages, jsonContent);
-        } catch (_e) {
-          // Ignore invalid JSON / unreadable files
+        } catch (err) {
+          console.warn(
+            `[veap:Intl] Failed to parse locale file at ${localeFile}:`,
+            err,
+          );
         }
       }
     }
@@ -102,7 +111,7 @@ export class IntlService {
       try {
         const loadFn = record.load || record.loader;
         if (loadFn) {
-          const loaded = await loadFn(locale);
+          const loaded = await loadFn(safeLocale);
           if (loaded) {
             const dict = (loaded as any).default || loaded;
             messages = deepMerge(messages, dict);
@@ -117,8 +126,8 @@ export class IntlService {
     }
 
     // 4. Manually registered messages (highest priority)
-    if (this.registeredMessages[locale]) {
-      messages = deepMerge(messages, this.registeredMessages[locale]);
+    if (this.registeredMessages[safeLocale]) {
+      messages = deepMerge(messages, this.registeredMessages[safeLocale]);
     }
 
     return messages;
