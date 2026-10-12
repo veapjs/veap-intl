@@ -1,6 +1,12 @@
 import { match } from "@formatjs/intl-localematcher";
+import {
+  app,
+  COOKIE_STORE,
+  type ICookieStore,
+  type IHttpRequestContext,
+  REQUEST_CONTEXT,
+} from "@veap/kernel";
 import Negotiator from "negotiator";
-import { cookies, headers } from "next/headers";
 import { getIntlConfig } from "./config.js";
 
 export async function detectLocale(
@@ -8,9 +14,15 @@ export async function detectLocale(
   defaultLocale: string,
 ): Promise<string> {
   try {
-    const headerList = await headers();
+    const requestContext = await app<IHttpRequestContext>(REQUEST_CONTEXT);
+    const acceptLanguage = await requestContext.getHeader("accept-language");
+
+    if (!acceptLanguage) {
+      return defaultLocale;
+    }
+
     const languages = new Negotiator({
-      headers: Object.fromEntries(headerList.entries()),
+      headers: { "accept-language": acceptLanguage },
     }).languages();
 
     return match(languages, supportedLocales, defaultLocale);
@@ -26,9 +38,10 @@ export async function getCurrentLocale(): Promise<string> {
     default: defaultLocale,
     locales,
   } = await getIntlConfig();
+
   try {
-    const cookieStore = await cookies();
-    const cookieValue = cookieStore.get(cookieName)?.value;
+    const cookieStore = await app<ICookieStore>(COOKIE_STORE);
+    const cookieValue = await cookieStore.get(cookieName);
 
     if (cookieValue && locales.includes(cookieValue)) {
       return cookieValue;

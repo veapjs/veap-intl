@@ -1,7 +1,6 @@
-import { cookies } from "next/headers";
 import React, { type PropsWithChildren } from "react";
 import { getIntlConfig } from "../common/config.js";
-import { detectLocale } from "../common/detection.js";
+import { getCurrentLocale } from "../common/detection.js";
 import { getMessages } from "../services/loader.js";
 import { I18nProvider as ClientProvider } from "./client.js";
 
@@ -9,25 +8,12 @@ import { I18nProvider as ClientProvider } from "./client.js";
  * Smart Server Component that handles locale detection and message loading automatically.
  */
 export async function I18nProvider({ children }: PropsWithChildren) {
-  const {
-    cookie: cookieName,
-    default: defaultLocale,
-    locales,
-    timeZone,
-  } = await getIntlConfig();
+  const { default: defaultLocale, locales, timeZone } = await getIntlConfig();
 
   let locale: string;
 
   try {
-    const cookieStore = await cookies();
-    const cookieValue = cookieStore.get(cookieName)?.value;
-
-    if (cookieValue && locales.includes(cookieValue)) {
-      locale = cookieValue;
-    } else {
-      // Automatic detection if no cookie or invalid cookie
-      locale = await detectLocale(locales, defaultLocale);
-    }
+    locale = await getCurrentLocale();
   } catch (_e) {
     // Fallback for build time or static generation
     locale = defaultLocale;

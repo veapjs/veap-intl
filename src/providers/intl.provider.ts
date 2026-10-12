@@ -24,6 +24,7 @@ export class IntlServiceProvider extends ServiceProvider {
     this.container.register({
       token: IntlService,
       useClass: IntlService,
+      inject: [INTL_MESSAGE_LOADERS],
       singleton: true,
     });
 

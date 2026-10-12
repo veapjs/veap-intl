@@ -1,5 +1,13 @@
 # @veap/intl
 
+## 0.1.2
+
+### Patch Changes
+
+- Decouple `@veap/intl` from direct `next/headers` imports in favor of `@veap/kernel` transport ports (`COOKIE_STORE`, `REQUEST_CONTEXT`).
+- Updated dependencies []:
+  - @veap/kernel@0.1.2
+
 ## 0.1.1
 
 ### Patch Changes

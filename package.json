@@ -1,6 +1,6 @@
 {
   "name": "@veap/intl",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Internationalization, message formatting, and locale detection for Veap",
   "bugs": "https://github.com/veapjs/veap-intl/issues",
   "repository": {
@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "@formatjs/intl-localematcher": "^0.8.13",
-    "@veap/kernel": "0.1.1",
+    "@veap/kernel": "0.1.2",
     "intl-messageformat": "^11.2.12",
     "negotiator": "^1.0.0"
   },
