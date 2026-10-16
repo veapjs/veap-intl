@@ -18,7 +18,7 @@ locale negotiation from HTTP `Accept-Language` headers and cookies.
 ## Features
 
 - **Full RSC & Client Support**: Seamless translation access in both Server
-  Components (`getTranslations`) and Client Components (`useTranslations`).
+  Components (`getTranslation`) and Client Components (`useTranslation`).
 - **ICU Message Syntax**: Dynamic variables, complex plural rules, numbers,
   and date formatting powered by `intl-messageformat`.
 - **Automatic locale detection**: Intelligent locale negotiation based on
@@ -59,11 +59,10 @@ export const app = Application.configure().use(IntlServiceProvider).create();
 Fetch translations asynchronously in Next.js Server Components:
 
 ```tsx
-import { getTranslations, getLocale } from "@veap/intl/server";
+import { getTranslation } from "@veap/intl/server";
 
 export default async function HomePage() {
-  const t = await getTranslations();
-  const locale = await getLocale();
+  const { t, locale } = await getTranslation("common");
 
   return (
     <main>
@@ -76,23 +75,20 @@ export default async function HomePage() {
 
 ### Client Components
 
-Use the `useTranslations` hook inside interactive client components:
+Use the `useTranslation` hook inside interactive client components:
 
 ```tsx
 "use client";
 
-import { useTranslations, useLocale } from "@veap/intl/client";
+import { useTranslation } from "@veap/intl/client";
 
 export function CounterButton() {
-  const t = useTranslations();
-  const { locale, setLocale } = useLocale();
+  const { t, locale } = useTranslation("common");
 
   return (
     <div>
       <p>{t("actions.click_to_continue")}</p>
-      <button onClick={() => setLocale(locale === "en" ? "pl" : "en")}>
-        {t("actions.switch_language")}
-      </button>
+      <span>Current locale: {locale}</span>
     </div>
   );
 }
@@ -100,10 +96,10 @@ export function CounterButton() {
 
 ### Root Layout Setup
 
-Wrap your application with `IntlProvider` or `IntlServerProvider`:
+Wrap your application with `I18nProvider`:
 
 ```tsx
-import { IntlServerProvider } from "@veap/intl/server";
+import { I18nProvider } from "@veap/intl/server";
 
 export default async function RootLayout({
   children,
@@ -113,7 +109,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body>
-        <IntlServerProvider>{children}</IntlServerProvider>
+        <I18nProvider>{children}</I18nProvider>
       </body>
     </html>
   );
@@ -122,11 +118,11 @@ export default async function RootLayout({
 
 ## Subpath Exports
 
-| Export Path         | Content                                                                         |
-| ------------------- | ------------------------------------------------------------------------------- |
-| `@veap/intl`        | Core types, constants, and translator functions                                 |
-| `@veap/intl/server` | `getTranslations`, `getLocale`, `IntlServerProvider`, and `IntlServiceProvider` |
-| `@veap/intl/client` | `IntlProvider`, `useTranslations`, and `useLocale` hooks                        |
+| Export Path         | Content                                                                          |
+| ------------------- | -------------------------------------------------------------------------------- |
+| `@veap/intl`        | Core types, constants, and `IntlServiceProvider`                                 |
+| `@veap/intl/server` | `getTranslation`, `getCurrentLocale`, `I18nProvider`, and `IntlServiceProvider`  |
+| `@veap/intl/client` | `I18nProvider` (client context) and `useTranslation` hook                        |
 
 ## Documentation
 
