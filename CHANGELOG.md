@@ -1,5 +1,16 @@
 # @veap/intl
 
+## 0.1.8
+
+### Patch Changes
+
+- Framework-independent locale detection in `@veap/intl`:
+  
+  - **Decoupled from Framework Globals**: Updated `getCurrentLocale` and `detectLocale` to utilize `@veap/kernel` ports (`COOKIE_STORE`, `REQUEST_CONTEXT`) for cookie reading and request headers.
+  - **IntlServiceProvider Registration**: Registered locale accessor factory within `IntlServiceProvider` using `@veap/kernel` ports.
+- Updated dependencies [`a7f6a1f`]:
+  - @veap/kernel@0.2.1
+
 ## 0.1.7
 
 ### Patch Changes

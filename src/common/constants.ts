@@ -19,6 +19,14 @@ export const LOCALES = DEFAULT_INTL_CONFIG.locales;
 export const INTL_MESSAGE_LOADERS = Symbol.for("veap:intl:message_loaders");
 export const INTL_SERVICE: Token<IntlService> = Symbol.for("veap:intl:service");
 
+export interface ILocaleResolver {
+  getLocale(): Promise<string> | string;
+}
+
+export const LOCALE_RESOLVER: Token<ILocaleResolver> = Symbol.for(
+  "veap:intl:locale-resolver",
+);
+
 export const IN_MS = {
   SECOND: 1_000,
   MINUTE: 60_000, // 60 * 1_000

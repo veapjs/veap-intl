@@ -1,5 +1,10 @@
 import { type Container, ServiceProvider } from "@veap/kernel";
-import { INTL_MESSAGE_LOADERS, INTL_SERVICE } from "../common/constants.js";
+import {
+  INTL_MESSAGE_LOADERS,
+  INTL_SERVICE,
+  LOCALE_RESOLVER,
+} from "../common/constants.js";
+import { getCurrentLocale } from "../common/detection.js";
 import type { MessageLoaderFn, MessageLoaderRecord } from "../common/types.js";
 import { IntlService } from "../services/intl.service.js";
 
@@ -34,5 +39,17 @@ export class IntlServiceProvider extends ServiceProvider {
       inject: [IntlService],
       singleton: true,
     });
+
+    this.container.register({
+      token: LOCALE_RESOLVER,
+      useValue: {
+        getLocale: () => getCurrentLocale(),
+      },
+      singleton: true,
+    });
+  }
+
+  async boot(): Promise<void> {
+    (globalThis as any).__VEAP_ASYNC_LOCALE_RESOLVER__ = getCurrentLocale;
   }
 }
